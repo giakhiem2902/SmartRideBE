@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartRideBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bffb055b2f9275407c13617cc3188179cdb146ab")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f68cbbfb4398fd3d715b1116bcae41ce41cc8492")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartRideBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartRideBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
