@@ -51,6 +51,11 @@ namespace SmartRideBackend.Models
         public bool IsHidden { get; set; } = false;
 
         /// <summary>
+        /// Flag to indicate if company is deleted
+        /// </summary>
+        public bool IsDeleted { get; set; } = false;
+
+        /// <summary>
         /// Timestamp when company was created
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

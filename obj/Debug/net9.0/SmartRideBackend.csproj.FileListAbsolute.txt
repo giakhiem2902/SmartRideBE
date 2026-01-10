@@ -158,3 +158,4 @@ D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.pdb
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.genruntimeconfig.cache
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\ref\SmartRideBackend.dll
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.sourcelink.json
+D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\appsettings.Development.json

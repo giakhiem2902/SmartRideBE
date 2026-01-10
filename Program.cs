@@ -145,11 +145,9 @@ using (var scope = app.Services.CreateAsyncScope())
 }
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Enable Swagger for all environments (for development/testing)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");

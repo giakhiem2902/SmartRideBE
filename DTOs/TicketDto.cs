@@ -111,4 +111,44 @@ namespace SmartRideBackend.DTOs
         /// </summary>
         public int NumberOfSeats { get; set; }
     }
+
+    /// <summary>
+    /// DTO for admin ticket view
+    /// </summary>
+    public class AdminTicketDto
+    {
+        public int Id { get; set; }
+
+        public string TicketNumber { get; set; } = string.Empty;
+
+        public int UserId { get; set; }
+
+        public string UserName { get; set; } = string.Empty;
+
+        public int TripId { get; set; }
+
+        public string TripRoute { get; set; } = string.Empty;
+
+        public int NumberOfSeats { get; set; }
+
+        public decimal TotalPrice { get; set; }
+
+        public List<string> SeatNumbers { get; set; } = new List<string>();
+
+        public string Status { get; set; } = string.Empty;
+
+        public DateTime BookingDate { get; set; }
+
+        public DateTime? PaymentDate { get; set; }
+
+        public DateTime? BoardingDate { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public bool IsHidden { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public TripDto? Trip { get; set; }
+    }
 }

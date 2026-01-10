@@ -139,6 +139,102 @@ namespace SmartRideBackend.Controllers
             });
         }
 
+        [Authorize]
+        [HttpPut("update-profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto model)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userId, out var id))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return NotFound();
+
+            try
+            {
+                if (!string.IsNullOrEmpty(model.FullName))
+                    user.FullName = model.FullName;
+
+                if (!string.IsNullOrEmpty(model.PhoneNumber))
+                    user.PhoneNumber = model.PhoneNumber;
+
+                user.UpdatedAt = DateTime.UtcNow;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description).ToList();
+                    return BadRequest(new AuthResponseDto
+                    {
+                        Success = false,
+                        Message = "Failed to update profile",
+                        Errors = errors
+                    });
+                }
+
+                return Ok(new AuthResponseDto
+                {
+                    Success = true,
+                    Message = "Profile updated successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = $"Error updating profile: {ex.Message}"
+                });
+            }
+        }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto model)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userId, out var id))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return NotFound();
+
+            try
+            {
+                var result = await _userManager.ChangePasswordAsync(
+                    user,
+                    model.CurrentPassword,
+                    model.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    var errors = result.Errors.Select(e => e.Description).ToList();
+                    return BadRequest(new AuthResponseDto
+                    {
+                        Success = false,
+                        Message = "Failed to change password",
+                        Errors = errors
+                    });
+                }
+
+                return Ok(new AuthResponseDto
+                {
+                    Success = true,
+                    Message = "Password changed successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new AuthResponseDto
+                {
+                    Success = false,
+                    Message = $"Error changing password: {ex.Message}"
+                });
+            }
+        }
+
         private string GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("Jwt");

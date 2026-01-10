@@ -123,4 +123,41 @@ namespace SmartRideBackend.DTOs
         /// </summary>
         public ICollection<string> Roles { get; set; } = new List<string>();
     }
+
+    /// <summary>
+    /// DTO for updating user profile
+    /// </summary>
+    public class UpdateProfileDto
+    {
+        /// <summary>
+        /// Full name
+        /// </summary>
+        public string? FullName { get; set; }
+
+        /// <summary>
+        /// Phone number
+        /// </summary>
+        public string? PhoneNumber { get; set; }
+    }
+
+    /// <summary>
+    /// DTO for changing password
+    /// </summary>
+    public class ChangePasswordDto
+    {
+        /// <summary>
+        /// Current password
+        /// </summary>
+        public string CurrentPassword { get; set; } = string.Empty;
+
+        /// <summary>
+        /// New password (min 6 characters)
+        /// </summary>
+        public string NewPassword { get; set; } = string.Empty;
+
+        /// <summary>
+        /// New password confirmation
+        /// </summary>
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
 }

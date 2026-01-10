@@ -1,5 +1,7 @@
 namespace SmartRideBackend.DTOs
 {
+    using System.ComponentModel.DataAnnotations;
+
     /// <summary>
     /// DTO for bus company response
     /// </summary>
@@ -59,6 +61,8 @@ namespace SmartRideBackend.DTOs
         /// <summary>
         /// Company name (required)
         /// </summary>
+        [Required(ErrorMessage = "Company name is required")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Company name must be between 1 and 100 characters")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>

@@ -97,6 +97,16 @@ namespace SmartRideBackend.DTOs
         public int BusCompanyId { get; set; }
 
         /// <summary>
+        /// Departure province ID (required)
+        /// </summary>
+        public int DepartureProvinceId { get; set; }
+
+        /// <summary>
+        /// Arrival province ID (required)
+        /// </summary>
+        public int ArrivalProvinceId { get; set; }
+
+        /// <summary>
         /// Departure city/province (required)
         /// </summary>
         public string DepartureCity { get; set; } = string.Empty;
@@ -120,6 +130,11 @@ namespace SmartRideBackend.DTOs
         /// Price per seat in VND (required)
         /// </summary>
         public decimal Price { get; set; }
+
+        /// <summary>
+        /// Total seats in the bus for this trip (required)
+        /// </summary>
+        public int TotalSeats { get; set; }
 
         /// <summary>
         /// Number of booked seats (default 0)
