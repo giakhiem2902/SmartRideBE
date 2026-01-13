@@ -113,6 +113,27 @@ namespace SmartRideBackend.DTOs
     }
 
     /// <summary>
+    /// DTO for updating a ticket (modify seats)
+    /// </summary>
+    public class UpdateTicketDto
+    {
+        /// <summary>
+        /// List of new seat numbers to book
+        /// </summary>
+        public ICollection<string>? SeatNumbers { get; set; }
+
+        /// <summary>
+        /// List of new seat IDs to book
+        /// </summary>
+        public ICollection<int>? SelectedSeatIds { get; set; }
+
+        /// <summary>
+        /// New status (optional)
+        /// </summary>
+        public string? Status { get; set; }
+    }
+
+    /// <summary>
     /// DTO for admin ticket view
     /// </summary>
     public class AdminTicketDto

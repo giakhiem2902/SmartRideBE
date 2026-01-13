@@ -272,6 +272,152 @@ namespace SmartRideBackend.Controllers
             });
         }
 
+        /// <summary>
+        /// Update ticket - change seats and/or status with automatic seat updates
+        /// Admin only
+        /// </summary>
+        [Authorize(Roles = "Admin")]
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ApiResponse<TicketDto>>> UpdateTicket(int id, [FromBody] UpdateTicketDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userId, out var currentUserId))
+                return Unauthorized();
+
+            var ticket = await _context.Tickets
+                .Include(t => t.Trip)
+                    .ThenInclude(tr => tr!.BusCompany)
+                .Include(t => t.TicketSeats)
+                    .ThenInclude(ts => ts.BusSeat)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (ticket == null)
+                return NotFound(new ApiResponse<TicketDto> { Success = false, Message = "Ticket not found" });
+
+            // If updating seats
+            if (dto.SeatNumbers?.Count > 0 || dto.SelectedSeatIds?.Count > 0)
+            {
+                // Free up old seats
+                var oldSeatIds = ticket.TicketSeats.Select(ts => ts.BusSeatId).ToList();
+                var oldSeats = await _context.BusSeats
+                    .Where(s => oldSeatIds.Contains(s.Id))
+                    .ToListAsync();
+
+                foreach (var seat in oldSeats)
+                {
+                    seat.Status = SeatStatus.Available;
+                }
+
+                // Update trip booked seats (decrease by old count)
+                var trip = await _context.Trips.FindAsync(ticket.TripId);
+                if (trip != null)
+                {
+                    trip.BookedSeats -= ticket.NumberOfSeats;
+                }
+
+                // Remove old ticket-seat relations
+                _context.TicketSeats.RemoveRange(ticket.TicketSeats);
+
+                // Get new seats
+                List<BusSeat>? newSeats = null;
+                var busId = ticket.Trip?.BusId ?? 0;
+                
+                if (dto.SelectedSeatIds?.Count > 0)
+                {
+                    newSeats = await _context.BusSeats
+                        .Where(s => s.BusId == busId && dto.SelectedSeatIds.Contains(s.Id))
+                        .ToListAsync();
+                }
+                else if (dto.SeatNumbers?.Count > 0)
+                {
+                    newSeats = await _context.BusSeats
+                        .Where(s => s.BusId == busId && dto.SeatNumbers.Contains(s.SeatNumber))
+                        .ToListAsync();
+                }
+
+                if (newSeats == null || newSeats.Count == 0)
+                    return BadRequest(new ApiResponse<TicketDto> { Success = false, Message = "New seats not found or invalid" });
+
+                // Check if new seats are available
+                if (newSeats.Any(s => s.Status != SeatStatus.Available))
+                    return BadRequest(new ApiResponse<TicketDto> { Success = false, Message = "Some selected seats are not available" });
+
+                // Reserve new seats
+                foreach (var seat in newSeats)
+                {
+                    seat.Status = SeatStatus.Booked;
+                    ticket.TicketSeats.Add(new TicketSeat { BusSeatId = seat.Id });
+                }
+
+                // Update ticket details
+                ticket.NumberOfSeats = newSeats.Count;
+                ticket.TotalPrice = newSeats.Count * ticket.Trip!.Price;
+
+                // Update trip booked seats (increase by new count)
+                if (trip != null)
+                {
+                    trip.BookedSeats += newSeats.Count;
+                }
+            }
+
+            // Update status if provided
+            if (!string.IsNullOrEmpty(dto.Status) && Enum.TryParse<TicketStatus>(dto.Status, out var status))
+            {
+                ticket.Status = status;
+            }
+
+            ticket.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+
+            // Return updated ticket
+            var seatNumbers = ticket.TicketSeats.Select(ts => ts.BusSeat!.SeatNumber).ToList();
+            var ticketDto = new TicketDto
+            {
+                Id = ticket.Id,
+                TicketNumber = ticket.TicketNumber,
+                QRCode = ticket.QRCode,
+                NumberOfSeats = ticket.NumberOfSeats,
+                TotalPrice = ticket.TotalPrice,
+                Status = ticket.Status.ToString(),
+                Trip = ticket.Trip != null ? new TripDto
+                {
+                    Id = ticket.Trip.Id,
+                    BusCompanyId = ticket.Trip.BusCompanyId,
+                    DepartureCity = ticket.Trip.DepartureCity,
+                    ArrivalCity = ticket.Trip.ArrivalCity,
+                    DepartureTime = ticket.Trip.DepartureTime,
+                    ArrivalTime = ticket.Trip.ArrivalTime,
+                    Price = ticket.Trip.Price,
+                    TotalSeats = ticket.Trip.TotalSeats,
+                    BookedSeats = ticket.Trip.BookedSeats,
+                    BusCompany = ticket.Trip.BusCompany != null ? new BusCompanyDto
+                    {
+                        Id = ticket.Trip.BusCompany.Id,
+                        Name = ticket.Trip.BusCompany.Name,
+                        Logo = ticket.Trip.BusCompany.Logo,
+                        Description = ticket.Trip.BusCompany.Description,
+                        PhoneNumber = ticket.Trip.BusCompany.PhoneNumber,
+                        Email = ticket.Trip.BusCompany.Email,
+                        Address = ticket.Trip.BusCompany.Address,
+                        IsActive = ticket.Trip.BusCompany.IsActive
+                    } : null
+                } : null,
+                SeatNumbers = seatNumbers
+            };
+
+            return Ok(new ApiResponse<TicketDto>
+            {
+                Success = true,
+                Message = "Ticket updated successfully",
+                Data = ticketDto
+            });
+        }
+
+        /// <summary>
+        /// Delete/Cancel ticket - releases seats and updates trip
+        /// Admin only
+        /// </summary>
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelTicket(int id)
         {
@@ -285,10 +431,6 @@ namespace SmartRideBackend.Controllers
 
             if (ticket == null)
                 return NotFound(new ApiResponse<string> { Success = false, Message = "Ticket not found" });
-
-            // Check authorization
-            if (ticket.UserId != currentUserId && !User.IsInRole("Admin"))
-                return Forbid();
 
             // Update seat status back to available
             var seatIds = ticket.TicketSeats.Select(ts => ts.BusSeatId).ToList();
@@ -306,6 +448,7 @@ namespace SmartRideBackend.Controllers
             if (trip != null)
             {
                 trip.BookedSeats -= ticket.NumberOfSeats;
+                trip.UpdatedAt = DateTime.UtcNow;
             }
 
             ticket.IsDeleted = true;
@@ -317,7 +460,73 @@ namespace SmartRideBackend.Controllers
             return Ok(new ApiResponse<string>
             {
                 Success = true,
-                Message = "Ticket cancelled successfully"
+                Message = "Ticket cancelled successfully, seats released"
+            });
+        }
+
+        /// <summary>
+        /// Get all tickets (Admin only)
+        /// </summary>
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        public async Task<ActionResult<ApiResponse<List<AdminTicketDto>>>> GetAllTickets([FromQuery] int? tripId, [FromQuery] int? userId, [FromQuery] string? status)
+        {
+            var query = _context.Tickets
+                .Include(t => t.User)
+                .Include(t => t.Trip)
+                .Include(t => t.TicketSeats)
+                    .ThenInclude(ts => ts.BusSeat)
+                .Where(t => !t.IsDeleted)
+                .AsQueryable();
+
+            if (tripId.HasValue)
+                query = query.Where(t => t.TripId == tripId);
+
+            if (userId.HasValue)
+                query = query.Where(t => t.UserId == userId);
+
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<TicketStatus>(status, out var ticketStatus))
+                query = query.Where(t => t.Status == ticketStatus);
+
+            var tickets = await query
+                .OrderByDescending(t => t.CreatedAt)
+                .ToListAsync();
+
+            var ticketDtos = tickets.Select(t => new AdminTicketDto
+            {
+                Id = t.Id,
+                TicketNumber = t.TicketNumber,
+                UserId = t.UserId,
+                UserName = t.User?.FullName ?? "Unknown",
+                TripId = t.TripId,
+                TripRoute = t.Trip != null ? $"{t.Trip.DepartureCity} → {t.Trip.ArrivalCity}" : "Unknown",
+                NumberOfSeats = t.NumberOfSeats,
+                TotalPrice = t.TotalPrice,
+                SeatNumbers = t.TicketSeats.Select(ts => ts.BusSeat!.SeatNumber).ToList(),
+                Status = t.Status.ToString(),
+                BookingDate = t.CreatedAt,
+                PaymentDate = t.PaymentDate,
+                BoardingDate = t.BoardingDate,
+                IsActive = t.IsActive,
+                IsHidden = t.IsHidden,
+                IsDeleted = t.IsDeleted,
+                Trip = t.Trip != null ? new TripDto
+                {
+                    Id = t.Trip.Id,
+                    DepartureCity = t.Trip.DepartureCity,
+                    ArrivalCity = t.Trip.ArrivalCity,
+                    DepartureTime = t.Trip.DepartureTime,
+                    ArrivalTime = t.Trip.ArrivalTime,
+                    Price = t.Trip.Price,
+                    BookedSeats = t.Trip.BookedSeats,
+                    TotalSeats = t.Trip.TotalSeats
+                } : null
+            }).ToList();
+
+            return Ok(new ApiResponse<List<AdminTicketDto>>
+            {
+                Success = true,
+                Data = ticketDtos
             });
         }
 
