@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using SmartRideBackend.Data;
 using SmartRideBackend.Models;
 using System.Text;
+using SmartRideBackend.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
+builder.Services.AddSignalR();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -155,5 +158,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();

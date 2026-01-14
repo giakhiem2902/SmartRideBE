@@ -1,3 +1,13 @@
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.csproj.AssemblyReference.cache
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\rpswa.dswa.cache.json
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.GeneratedMSBuildEditorConfig.editorconfig
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.AssemblyInfoInputs.cache
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.AssemblyInfo.cs
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.csproj.CoreCompileInputs.cache
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.MvcApplicationPartsAssemblyInfo.cs
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.MvcApplicationPartsAssemblyInfo.cache
+D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.sourcelink.json
+D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\appsettings.Development.json
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\appsettings.json
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\package.json
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\SmartRideBackend.staticwebassets.endpoints.json
@@ -135,14 +145,6 @@ D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\runtimes\win\lib\net6.0\
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.csproj.AssemblyReference.cache
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\rpswa.dswa.cache.json
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.GeneratedMSBuildEditorConfig.editorconfig
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.AssemblyInfoInputs.cache
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.AssemblyInfo.cs
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.csproj.CoreCompileInputs.cache
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.MvcApplicationPartsAssemblyInfo.cs
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.MvcApplicationPartsAssemblyInfo.cache
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\rjimswa.dswa.cache.json
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\rjsmrazor.dswa.cache.json
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\rjsmcshtml.dswa.cache.json
@@ -157,5 +159,3 @@ D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\refint\SmartRideBackend.
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.pdb
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.genruntimeconfig.cache
 D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\ref\SmartRideBackend.dll
-D:\app_test\SmartRide\SmartRideBackend\obj\Debug\net9.0\SmartRideBackend.sourcelink.json
-D:\app_test\SmartRide\SmartRideBackend\bin\Debug\net9.0\appsettings.Development.json

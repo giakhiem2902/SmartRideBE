@@ -19,6 +19,10 @@ namespace SmartRideBackend.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<TicketSeat> TicketSeats { get; set; }
         public DbSet<Province> Provinces { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatRoomMember> ChatRoomMembers { get; set; }
+        public DbSet<SupportTicket> SupportTickets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -72,6 +76,51 @@ namespace SmartRideBackend.Data
                 .WithMany(bs => bs.TicketSeats)
                 .HasForeignKey(ts => ts.BusSeatId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Chat configurations
+            modelBuilder.Entity<ChatRoom>()
+                .HasOne(cr => cr.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(cr => cr.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.ChatRoom)
+                .WithMany(cr => cr.Messages)
+                .HasForeignKey(cm => cm.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.User)
+                .WithMany()
+                .HasForeignKey(cm => cm.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatRoomMember>()
+                .HasOne(crm => crm.ChatRoom)
+                .WithMany(cr => cr.Members)
+                .HasForeignKey(crm => crm.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ChatRoomMember>()
+                .HasOne(crm => crm.User)
+                .WithMany()
+                .HasForeignKey(crm => crm.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Support Ticket configurations
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(st => st.User)
+                .WithMany()
+                .HasForeignKey(st => st.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SupportTicket>()
+                .HasOne(st => st.AssignedToUser)
+                .WithMany()
+                .HasForeignKey(st => st.AssignedToUserId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
 
             // Configure decimal precision
             modelBuilder.Entity<Trip>()
